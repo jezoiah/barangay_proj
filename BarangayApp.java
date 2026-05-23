@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,7 +13,7 @@ public class BarangayApp {
         boolean isRunning = true;
 
         while (isRunning) {
-            System.out.println("-- Welcome to BarangayONE!\n");
+            System.out.println("\n--- Welcome to BarangayONE!\n");
             System.out.println("LOGIN");
             Credentials creds = LM.login(input);
 
@@ -24,6 +25,8 @@ public class BarangayApp {
                 } else {
                     runUserMenu = true;
                 }
+            } else {
+                isRunning = false;
             }
 
             while (runAdminMenu) {
@@ -105,19 +108,92 @@ public class BarangayApp {
                                 }
 
                                 if (selectedResident != null) {
-                                    System.out.println("\n--- Resident Details ---");
-                                    System.out.println("ID: " + selectedResident.getResidentID());
-                                    System.out.println("Last Name: " + selectedResident.getLastName());
-                                    System.out.println("First Name: " + selectedResident.getFirstName());
-                                    System.out.println("Middle Name: " + selectedResident.getMiddleName());
-                                    System.out.println("Sex: " + selectedResident.getSex());
-                                    System.out.println("Date of Birth: " + selectedResident.getDOB());
-                                    System.out.println("Place of Birth: " + selectedResident.getPOB());
-                                    System.out.println("Household ID: " + selectedResident.getHouseholdID());
-                                    System.out.println("Civil Status: " + selectedResident.getCivilStatus());
-                                    System.out.println("Citizenship: " + selectedResident.getCitizenship());
-                                    System.out.println("Occupation: " + selectedResident.getOccupation());
-                                    System.out.println("Residency Start: " + selectedResident.getResidencyStart());
+
+                                    selectedResident.displayResidentInfo();
+                                    boolean runResMenu = true;
+
+                                    while (runResMenu) {
+                                        System.out.println("\nActions:");
+                                        System.out.println("1] Update Record");
+                                        System.out.println("2] Back");
+                                        System.out.print("Enter choice [1/2]: ");
+                                        String option = input.nextLine();
+
+                                        switch (option) {
+                                            case "1":
+                                                System.out.println("\nUPDATING BARANGAY INHABITANT RECORD");
+                                                System.out.println("Enter new information or leave blank to keep previous.");
+
+                                                System.out.print("Last Name: ");
+                                                String lastName = input.nextLine();
+                                                if (!lastName.isEmpty()) {
+                                                    selectedResident.setLastName(lastName);
+                                                }
+                                                System.out.print("First Name: ");
+                                                String firstName = input.nextLine();
+                                                if (!firstName.isEmpty()) {
+                                                    selectedResident.setFirstName(firstName);
+                                                }
+                                                System.out.print("Middle Name: ");
+                                                String middleName = input.nextLine();
+                                                if (!middleName.isEmpty()) {
+                                                    selectedResident.setMiddleName(middleName);
+                                                }
+                                                System.out.print("Sex: ");
+                                                String sex = input.nextLine();
+                                                if (!sex.isEmpty()) {
+                                                    selectedResident.setSex(sex);
+                                                }
+                                                System.out.print("Birthdate [YYYY-MM-DD]: ");
+                                                String dob = input.nextLine();
+                                                if (!dob.isEmpty()) {
+                                                    selectedResident.setDOB(LocalDate.parse(dob));
+                                                }
+                                                System.out.print("Place of Birth: ");
+                                                String pob = input.nextLine();
+                                                if (!pob.isEmpty()) {
+                                                    selectedResident.setPOB(pob);
+                                                }
+                                                System.out.print("Household ID: ");
+                                                String houseID = input.nextLine();
+                                                if (!houseID.isEmpty()) {
+                                                    selectedResident.setHouseholdID(Integer.parseInt(houseID));
+                                                }
+                                                System.out.print("Civil Status: ");
+                                                String civilStatus = input.nextLine();
+                                                if (!civilStatus.isEmpty()) {
+                                                    selectedResident.setCivilStatus(civilStatus);
+                                                }
+                                                System.out.print("Citizenship: ");
+                                                String citizenship = input.nextLine();
+                                                if (!citizenship.isEmpty()) {
+                                                    selectedResident.setCitizenship(citizenship);
+                                                }
+                                                System.out.print("Occupation: ");
+                                                String occupation = input.nextLine();
+                                                if (!occupation.isEmpty()) {
+                                                    selectedResident.setOccupation(occupation);
+                                                }
+
+                                                System.out.println();
+
+                                                if (DB.updateResidentInfo(selectedResident)) {
+                                                    System.out.println("Record updated successfully.");
+                                                } else {
+                                                    System.out.println("Failed to update record.");
+                                                }
+
+                                                break;
+
+                                            case "2":
+                                                runResMenu = false;
+                                                break;
+
+                                            default:
+                                                System.out.println("Invalid input. Please enter 1 or 2 only.");
+                                        }
+                                    }
+
                                 } else {
                                     System.out.println("Resident ID does not exist.");
                                     break;
@@ -165,7 +241,7 @@ public class BarangayApp {
                 switch (choice) {
                     case "1":
                         break;
-                        
+
                     case "2":
                         break;
 
