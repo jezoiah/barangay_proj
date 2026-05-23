@@ -83,6 +83,30 @@ public class Resident {
         return occupation;
     }
 
-    // add method for calculating years of residency and age
+    public int calculateAge() {
+        int age = java.time.Period.between(getDOB(), java.time.LocalDate.now()).getYears();
+        return age;
+    }
+
+    public void displayResidentInfo() {
+        System.out.println("-------------------------------------------------------------------------------------------------");
+
+        System.out.println("  Resident ID: " + getResidentID());
+        System.out.println("");
+
+        System.out.printf("  %-30s %-35s %-25s%n", "Last Name: " + getLastName(), "First Name: " + getFirstName(), "Middle Name: " + getMiddleName());
+        System.out.printf("  %-30s %-35s %-25s%n", "Sex: " + getSex(), "Age: " + calculateAge(), "Date of Birth: " + getDOB());
+        System.out.printf("  %-30s %-35s %-25s%n", "Civil Status: " + getCivilStatus(), "Citizenship: " + getCitizenship(), "Occupation: " + getOccupation());
+
+        System.out.println("");
+
+        System.out.println("  Place of Birth: " + getPOB());
+        System.out.println("  Current Address: " + getHouseholdID());
+        System.out.println("  Start of Residency: " + getResidencyStart());
+
+        System.out.println("-------------------------------------------------------------------------------------------------");
+    }
+
+    // add method for calculating years of residency
 
 }
