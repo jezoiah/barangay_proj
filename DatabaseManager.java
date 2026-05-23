@@ -129,4 +129,32 @@ public class DatabaseManager {
             return false;
         }
     }
+
+    public boolean updateResidentInfo(Resident resident) {
+        String query = "UPDATE residents SET lname = ?, fname = ?, mname = ?, sex = ?, dob = ?, pob = ?, address = ?, civilstatus = ?, citizenship = ?, occupation = ? WHERE residentID = ?";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+
+            preparedStatement.setString(1, resident.getLastName());
+            preparedStatement.setString(2, resident.getFirstName());
+            preparedStatement.setString(3, resident.getMiddleName());
+            preparedStatement.setString(4, resident.getSex());
+            preparedStatement.setDate(5, Date.valueOf(resident.getDOB()));
+            preparedStatement.setString(6, resident.getPOB());
+            preparedStatement.setInt(7, resident.getHouseholdID());
+            preparedStatement.setString(8, resident.getCivilStatus());
+            preparedStatement.setString(9, resident.getCitizenship());
+            preparedStatement.setString(10, resident.getOccupation());
+            preparedStatement.setString(11, resident.getResidentID());
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
