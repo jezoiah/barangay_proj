@@ -7,6 +7,7 @@ public class BarangayApp {
         Scanner input = new Scanner(System.in);
         DatabaseManager DB = new DatabaseManager();
         LoginManager LM = new LoginManager(DB);
+        ReportManager RM = new ReportManager(DB);
         
         boolean runAdminMenu = false;
         boolean runUserMenu = false;
@@ -30,7 +31,7 @@ public class BarangayApp {
             }
 
             while (runAdminMenu) {
-                System.out.println("\n--- MENU ---");
+                System.out.println("\n --- MENU ---");
                 System.out.println("1] Register an account");
                 System.out.println("2] View Residents");
                 System.out.println("3] View Document Requests");
@@ -113,7 +114,7 @@ public class BarangayApp {
                                     boolean runResMenu = true;
 
                                     while (runResMenu) {
-                                        System.out.println("\nActions:");
+                                        System.out.println("\n Actions:");
                                         System.out.println("1] Update Record");
                                         System.out.println("2] Back");
                                         System.out.print("Enter choice [1/2]: ");
@@ -210,6 +211,7 @@ public class BarangayApp {
                         break;
 
                     case "5":
+                        RM.viewBlotterReports(input);
                         break;
 
                     case "6":
@@ -229,7 +231,7 @@ public class BarangayApp {
             }
 
             while (runUserMenu) {
-                System.out.println("\n--- MENU ---");
+                System.out.println("\n --- MENU ---");
                 System.out.println("1] Request a document");
                 System.out.println("2] File a report");
                 System.out.println("3] View Document Requests");
@@ -243,6 +245,8 @@ public class BarangayApp {
                         break;
 
                     case "2":
+                        String residentID = DB.getResidentIDByUsername(creds.getUsername());
+                        RM.fileReport(input, residentID);
                         break;
 
                     case "3":
