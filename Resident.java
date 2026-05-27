@@ -1,4 +1,5 @@
 import java.time.LocalDate;
+import java.time.Period;
 
 public class Resident {
     private String residentID;
@@ -8,6 +9,7 @@ public class Resident {
     private String pob;
     private int householdID;
     private String civilStatus, citizenship, occupation;
+    private String address;
 
     public void setResidentID(String residentID) {
         this.residentID = residentID;
@@ -44,6 +46,9 @@ public class Resident {
     }
     public void setOccupation(String occupation) {
         this.occupation = occupation;
+    }
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getResidentID() {
@@ -82,6 +87,9 @@ public class Resident {
     public String getOccupation() {
         return occupation;
     }
+    public String getAddress() {
+        return address;
+    }
 
     public int calculateAge() {
         int age = java.time.Period.between(getDOB(), java.time.LocalDate.now()).getYears();
@@ -101,12 +109,19 @@ public class Resident {
         System.out.println("");
 
         System.out.println("  Place of Birth: " + getPOB());
-        System.out.println("  Current Address: " + getHouseholdID());
+        System.out.println("  Current Address: " + getAddress());
         System.out.println("  Start of Residency: " + getResidencyStart());
 
         System.out.println("-------------------------------------------------------------------------------------------------");
     }
 
-    // add method for calculating years of residency
+    public int calculateResidencyDuration() {
+        LocalDate start = getResidencyStart();
+        LocalDate current = LocalDate.now();
 
+        Period period = Period.between(start, current);
+        int totalDuration = (int) period.toTotalMonths();
+
+        return totalDuration;
+    }
 }
