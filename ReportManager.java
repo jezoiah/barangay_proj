@@ -11,7 +11,7 @@ public class ReportManager {
     public void fileReport(Scanner sc, String residentID){
         Report report = new Report(0, "");
 
-        System.out.println("\n BLOTTER REPORT");
+        System.out.println("\nBLOTTER REPORT");
         
         System.out.println("Nature of Report:");
         System.out.println("1] Noise Complaint");
