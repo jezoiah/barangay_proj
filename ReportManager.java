@@ -11,7 +11,7 @@ public class ReportManager {
     public void fileReport(Scanner sc, String residentID){
         Report report = new Report(0, "");
 
-        System.out.println("\nBLOTTER REPORT");
+        System.out.println("\n BLOTTER REPORT");
         
         System.out.println("Nature of Report:");
         System.out.println("1] Noise Complaint");
@@ -22,7 +22,7 @@ public class ReportManager {
         System.out.println("6] Domestic Disputes");
         System.out.println("7] Vehicular Incidents");
         System.out.println("8] Animal-Related Incidents");
-        System.out.println("9] Pulic Disturbance or Vandalism");
+        System.out.println("9] Public Disturbance or Vandalism");
         System.out.println("10] Missing Person Report");
         System.out.print("Choose between 1-10: ");
         String choice = sc.nextLine();
@@ -54,7 +54,7 @@ public class ReportManager {
                 natureOfReport = "Animal-Related Incidents";
                 break;
             case "9":
-                natureOfReport = "Pulic Disturbance or Vandalism";
+                natureOfReport = "Public Disturbance or Vandalism";
                 break;
             case "10":
                 natureOfReport = "Missing Person Report";
@@ -112,7 +112,13 @@ public class ReportManager {
                     System.out.println((i+1) + "] " + res.getFirstName() + " " + res.getLastName());
                 }
                 System.out.print("Select resident (or 0 to store as unregistered): ");
-                int pick = Integer.parseInt(sc.nextLine());
+                int pick;
+                try {
+                    pick = Integer.parseInt(sc.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Storing as unregistered.");
+                    pick = 0;
+                }
                 if (pick != 0) {
                     foundResidentID = matches.get(pick - 1).getResidentID();
                     r.setRespondent(matches.get(pick - 1).getFirstName() + " " + matches.get(pick - 1).getMiddleName() + " " + matches.get(pick - 1).getLastName());
@@ -157,11 +163,10 @@ public class ReportManager {
         }
     }
 
-    public void viewBlotterReports(Scanner sc){
-        ArrayList<Report> reports = dbManager.getBlotterReports();
-        
+    public void viewBlotterReports(Scanner sc){        
         while(true){
-            System.out.println("\n --- Blotter Reports ---");
+            ArrayList<Report> reports = dbManager.getBlotterReports();
+            System.out.println("\n--- Blotter Reports ---");
             for (Report report : reports){
                 System.out.println("Blotter ID: " + report.getBlotterID() + " | Nature of Report: " + report.getNatureofReport() + " | Incident Date: " + report.getIncidentDate() + " | Reporter: " + report.getReporterResidentID() + " | Status: " + report.getStatus());
             }
@@ -180,7 +185,7 @@ public class ReportManager {
                     updateBlotterStatus(sc, reports);
                     break;
                 case "3":
-                    break;
+                    return;
                 default:
                     System.out.println("Choose within option only.");
                     return;
@@ -190,8 +195,14 @@ public class ReportManager {
 
     public void viewSpecificReport(Scanner sc, ArrayList<Report> reports){
         System.out.print("\nEnter Blotter ID: ");
-        int blotterInput = Integer.parseInt(sc.nextLine());
+        int blotterInput;
         
+        try {
+            blotterInput = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid Blotter ID.");
+            return;
+        }
         Report selectedReport = null;
         for (Report report : reports){
             if (report.getBlotterID() == (blotterInput)){
@@ -224,7 +235,14 @@ public class ReportManager {
 
     public void updateBlotterStatus(Scanner sc, ArrayList<Report> reports){
         System.out.print("\nEnter Blotter ID: ");
-        int blotterInput = Integer.parseInt(sc.nextLine());
+        int blotterInput;
+
+        try {
+            blotterInput = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input. Please enter a valid Blotter ID.");
+            return;
+        }
 
         Report selectedReport = null;
         for (Report report : reports){
@@ -249,13 +267,27 @@ public class ReportManager {
                             break;
                         case "2": 
                             newStatus = "Unsettled"; 
-                                break;
+                            break;
                         default: 
                             System.out.println("Invalid choice."); 
                             return;
-                        }
+                    }
                 } else {
-                    newStatus = "Recorded";
+                    System.out.println("1] Recorded");
+                    System.out.println("2] Cancel");
+                    System.out.print("Choose a status update: ");
+                    String statusChoice = sc.nextLine();
+                    switch (statusChoice) {
+                        case "1": 
+                            newStatus = "Recorded"; 
+                            break;
+                        case "2": 
+                            System.out.println("Cancelled update."); 
+                            return;
+                        default: 
+                            System.out.println("Invalid choice."); 
+                            return;
+                    }
                 }
 
                 if (dbManager.updateBlotterStatus(selectedReport.getBlotterID(), newStatus)) {
