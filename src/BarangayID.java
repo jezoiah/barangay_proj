@@ -1,3 +1,4 @@
+package src;
 public class BarangayID extends Document {
     BarangayID() {
         super();

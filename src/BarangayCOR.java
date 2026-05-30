@@ -1,3 +1,4 @@
+package src;
 public class BarangayCOR extends Document {
     BarangayCOR() {
         super();

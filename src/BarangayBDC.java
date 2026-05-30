@@ -1,3 +1,4 @@
+package src;
 public class BarangayBDC extends Document {
     BarangayBDC() {
         super();
