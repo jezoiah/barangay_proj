@@ -1,0 +1,3 @@
+Rename your downloaded PDF to: template.pdf
+and place it in this folder.
+Copies go to Desktop/

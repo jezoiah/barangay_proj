@@ -1,10 +1,11 @@
+package src;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:mysql://localhost:3306/barangaydb";
+    private static final String URL = "jdbc:mysql://localhost:8889/barangaydb";
     private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "root";
 
     public boolean authenticate(String username, String password) {
         String query = "SELECT * FROM credentials WHERE username = ? AND password = ?";
@@ -20,6 +21,7 @@ public class DatabaseManager {
             }
 
         } catch (SQLException e) {
+            System.err.println("Database connection failed: " + e.getMessage());
             return false;
         }
     }
@@ -218,7 +220,7 @@ public class DatabaseManager {
     }
 
     public boolean updateResidentInfo(Resident resident) {
-        String query = "UPDATE residents SET lname = ?, fname = ?, mname = ?, sex = ?, dob = ?, pob = ?, address = ?, civilstatus = ?, citizenship = ?, occupation = ? WHERE residentID = ?";
+        String query = "UPDATE residents SET lname = ?, fname = ?, mname = ?, sex = ?, dob = ?, pob = ?, householdID = ?, civilstatus = ?, citizenship = ?, occupation = ? WHERE residentID = ?";
 
         try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
@@ -308,11 +310,10 @@ public class DatabaseManager {
                         document = new BarangayBDC(); 
                     }
 
-                    document.setID(resultSet.getInt(1));
-                    document.setResidentID(resultSet.getString(2));
-                    document.setStatus(resultSet.getString(4));
-
                     if (document != null) {
+                        document.setID(resultSet.getInt(1));
+                        document.setResidentID(resultSet.getString(2));
+                        document.setStatus(resultSet.getString(4));
                         docList.add(document);
                     }
                 }
@@ -352,11 +353,10 @@ public class DatabaseManager {
                         document = new BarangayBDC(); 
                     }
 
-                    document.setID(resultSet.getInt(1));
-                    document.setResidentID(resultSet.getString(2));
-                    document.setStatus(resultSet.getString(4));
-
                     if (document != null) {
+                        document.setID(resultSet.getInt(1));
+                        document.setResidentID(resultSet.getString(2));
+                        document.setStatus(resultSet.getString(4));
                         docList.add(document);
                     }
                 }

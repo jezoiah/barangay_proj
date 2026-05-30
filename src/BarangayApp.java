@@ -1,3 +1,5 @@
+package src;
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -212,8 +214,14 @@ public class BarangayApp {
                                 System.out.println("ID: " + document.getID() + " | " + document.getResidentID() + " | " + document.getDocType() + " | Status: " + document.getStatus());
                             }
                             System.out.print("Enter Document ID: ");
-                            int docID = input.nextInt();
-                            input.nextLine();
+                            String docIDInput = input.nextLine();
+                            int docID;
+                            try {
+                                docID = Integer.parseInt(docIDInput.trim());
+                            } catch (NumberFormatException e) {
+                                System.out.println("Invalid input. Please enter a valid Document ID.");
+                                break;
+                            }
 
                             int count = 0;
                             for (Document document : documents) {
@@ -249,6 +257,8 @@ public class BarangayApp {
                                                     if (DB.deleteRequest(docID)) {
                                                         if (DB.addIssuance(document.getResidentID(), document.getDocType(), "Ready")) {
                                                             System.out.println("Request ready for pickup.");
+                                                            offerPdfDownload(input, document.getDocType(),
+                                                                    "Download PDF for printing/handover? [Y/N]: ");
                                                         } else {
                                                             System.out.println("Failed to update request.");
                                                         }
@@ -288,6 +298,7 @@ public class BarangayApp {
                             for (Document issuance : issuances) {
                                 System.out.println("ID: " + issuance.getID() + " | " + issuance.getResidentID() + " | " + issuance.getDocType() + " | Status: " + issuance.getStatus());
                             }
+                            promptIssuancePdf(input, DB, issuances);
                         } else {
                             System.out.println("No issuances found.");
                         }
@@ -309,14 +320,15 @@ public class BarangayApp {
                         break;
 
                     default:
-                        System.out.println("Invalid input. Please enter a number from 1 to 6.");
+                        System.out.println("Invalid input. Please enter a number from 1 to 7.");
                 }
             }
 
-            while (runUserMenu) {
+            if (runUserMenu) {
                 String residentID = DB.getResidentID(creds.getUsername(), creds.getPassword());
                 Resident resident = DB.getResident(residentID);
 
+                while (runUserMenu) {
                 System.out.println("\nHello, " + resident.getFirstName() + "!");
                 System.out.println("\n--- MENU ---");
                 System.out.println("1] Request a document");
@@ -346,6 +358,7 @@ public class BarangayApp {
                                 case "1":
                                     Document barangayClearance = new BarangayCLR();
                                     barangayClearance.displayRequirements();
+                                    offerPdfDownload(input, barangayClearance.getDocType(), "\nDownload PDF? [Y/N]: ");
 
                                     while (true) {
                                         System.out.print("\nSubmit? [Y/N]: ");
@@ -369,6 +382,7 @@ public class BarangayApp {
                                 case "2":
                                     Document barangayID = new BarangayID();
                                     barangayID.displayRequirements();
+                                    offerPdfDownload(input, barangayID.getDocType(), "\nDownload PDF? [Y/N]: ");
 
                                     while (true) {
                                         System.out.print("\nSubmit? [Y/N]: ");
@@ -392,6 +406,7 @@ public class BarangayApp {
                                 case "3":
                                     Document cor = new BarangayCOR();
                                     cor.displayRequirements(resident);
+                                    offerPdfDownload(input, cor.getDocType(), "\nDownload PDF? [Y/N]: ");
 
                                     while (true) {
                                         System.out.print("\nSubmit? [Y/N]: ");
@@ -415,6 +430,7 @@ public class BarangayApp {
                                 case "4":
                                     Document coi = new BarangayCOI();
                                     coi.displayRequirements();
+                                    offerPdfDownload(input, coi.getDocType(), "\nDownload PDF? [Y/N]: ");
 
                                     while (true) {
                                         System.out.print("\nSubmit? [Y/N]: ");
@@ -438,6 +454,7 @@ public class BarangayApp {
                                 case "5":
                                     Document businessPermit = new BarangayBNP();
                                     businessPermit.displayRequirements();
+                                    offerPdfDownload(input, businessPermit.getDocType(), "\nDownload PDF? [Y/N]: ");
 
                                     while (true) {
                                         System.out.print("\nSubmit? [Y/N]: ");
@@ -461,6 +478,7 @@ public class BarangayApp {
                                 case "6":
                                     Document buildingClearance = new BarangayBDC();
                                     buildingClearance.displayRequirements();
+                                    offerPdfDownload(input, buildingClearance.getDocType(), "\nDownload PDF? [Y/N]: ");
 
                                     while (true) {
                                         System.out.print("\nSubmit? [Y/N]: ");
@@ -511,6 +529,7 @@ public class BarangayApp {
                                 for (Document document : readyDocuments) {
                                     System.out.println("ID: " + document.getID() + " | " + document.getDocType() + " | Status: " + document.getStatus());
                                 }
+                                promptReadyDocumentPdf(input, resident, readyDocuments);
                             }
                             if (!approvedDocuments.isEmpty()) {
                                 System.out.println("\n[ APPROVED ]");
@@ -545,10 +564,83 @@ public class BarangayApp {
                         break;
 
                     default:
-                        System.out.println("Invalid input. Please enter a number from 1 to 4.");
+                        System.out.println("Invalid input. Please enter a number from 1 to 5.");
                 }
+            }
             }
         }
         input.close();
+    }
+
+    private static void offerPdfDownload(Scanner input, String docType, String prompt) {
+        if (!promptYesNo(input, prompt)) {
+            return;
+        }
+        downloadPdf(docType);
+    }
+
+    private static void downloadPdf(String docType) {
+        String path = DocumentManager.download(docType);
+        if (path != null) {
+            System.out.println("PDF downloaded to: " + new File(path).getAbsolutePath());
+        }
+    }
+
+    private static void promptIssuancePdf(Scanner input, DatabaseManager db, ArrayList<Document> issuances) {
+        if (!promptYesNo(input, "\nDownload PDF for an issuance? [Y/N]: ")) {
+            return;
+        }
+        System.out.print("Enter issuance ID: ");
+        String idInput = input.nextLine().trim();
+        int issuanceId;
+        try {
+            issuanceId = Integer.parseInt(idInput);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid issuance ID.");
+            return;
+        }
+        for (Document issuance : issuances) {
+            if (issuance.getID() == issuanceId) {
+                downloadPdf(issuance.getDocType());
+                return;
+            }
+        }
+        System.out.println("Issuance ID not found.");
+    }
+
+    private static void promptReadyDocumentPdf(Scanner input, Resident resident, ArrayList<Document> readyDocuments) {
+        if (!promptYesNo(input, "\nDownload PDF for a ready document? [Y/N]: ")) {
+            return;
+        }
+        System.out.print("Enter document ID: ");
+        String idInput = input.nextLine().trim();
+        int docId;
+        try {
+            docId = Integer.parseInt(idInput);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid document ID.");
+            return;
+        }
+        for (Document document : readyDocuments) {
+            if (document.getID() == docId) {
+                downloadPdf(document.getDocType());
+                return;
+            }
+        }
+        System.out.println("Document ID not found in ready list.");
+    }
+
+    private static boolean promptYesNo(Scanner input, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String choice = input.nextLine().trim();
+            if (choice.equalsIgnoreCase("Y")) {
+                return true;
+            }
+            if (choice.equalsIgnoreCase("N")) {
+                return false;
+            }
+            System.out.println("Invalid input. Please enter Y or N.");
+        }
     }
 }

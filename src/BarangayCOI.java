@@ -1,3 +1,4 @@
+package src;
 public class BarangayCOI extends Document {
     BarangayCOI() {
         super();
