@@ -35,13 +35,14 @@ public class BarangayApp {
             while (runAdminMenu) {
                 System.out.println("\n--- MENU ---");
                 System.out.println("1] Register an account");
-                System.out.println("2] View Residents");
-                System.out.println("3] View Document Requests");
-                System.out.println("4] View Issuances");
-                System.out.println("5] View Reports");
-                System.out.println("6] Log out");
-                System.out.println("7] Exit");
-                System.out.print("Enter your choice [1-7]: ");
+                System.out.println("2] Register a resident");
+                System.out.println("3] View Residents");
+                System.out.println("4] View Document Requests");
+                System.out.println("5] View Issuances");
+                System.out.println("6] View Reports");
+                System.out.println("7] Log out");
+                System.out.println("8] Exit");
+                System.out.print("Enter your choice [1-8]: ");
                 String choice = input.nextLine();
 
                 switch (choice) {
@@ -88,6 +89,49 @@ public class BarangayApp {
                         break;
                         
                     case "2":
+                        System.out.println("\n--- Resident Registration ---");
+                        System.out.print("Last Name: ");
+                        String lname = input.nextLine().trim();
+                        System.out.print("First Name: ");
+                        String fname = input.nextLine().trim();
+                        System.out.print("Middle Name: ");
+                        String mname = input.nextLine().trim();
+                        System.out.print("Sex: ");
+                        String rSex = input.nextLine().trim();
+                        System.out.print("Birthdate [YYYY-MM-DD]: ");
+                        String rDOB = input.nextLine();
+                        System.out.print("Place of Birth: ");
+                        String rPOB = input.nextLine().trim();
+                        System.out.print("Household ID: ");
+                        int rHouseholdID = input.nextInt();
+                        input.nextLine();
+                        System.out.print("Civil Status: ");
+                        String rCivilStatus = input.nextLine().trim();
+                        System.out.print("Citizenship: ");
+                        String rCitizenship = input.nextLine().trim();
+                        System.out.print("Occupation: ");
+                        String rOccupation = input.nextLine().trim();
+
+                        while (true) {
+                            System.out.print("\nRegister resident? [Y/N]: ");
+                            String yn = input.nextLine().trim();
+
+                            if (yn.equalsIgnoreCase("Y")) {
+                                if (DB.addResident(lname, fname, mname, rSex, LocalDate.parse(rDOB), rPOB, rHouseholdID, rCivilStatus, rCitizenship, rOccupation)) {
+                                    System.out.println("Resident registered successfully.");
+                                } else {
+                                    System.out.println("Failed to register resident.");
+                                }
+                                break;
+                            } else if (yn.equalsIgnoreCase("N")) {
+                                break;
+                            } else {
+                                System.out.println("Invalid input. Please enter Y or N only.");
+                            }
+                        }
+                        break;
+                    
+                    case "3":
                         ArrayList<Resident> residents = DB.getResidents();
 
                         while (true) {
@@ -206,7 +250,7 @@ public class BarangayApp {
                         }
                         break;
 
-                    case "3":
+                    case "4":
                         ArrayList<Document> documents = DB.getDocuments("documents");
                         System.out.println("\n--- Document Requests ---");
                         if (!documents.isEmpty()) {
@@ -295,7 +339,7 @@ public class BarangayApp {
                         }
                         break;
 
-                    case "4":
+                    case "5":
                         ArrayList<Document> issuances = DB.getDocuments("issuances");
                         System.out.println("\n--- Issuances ---");
                         if (!issuances.isEmpty()) {
@@ -308,23 +352,23 @@ public class BarangayApp {
                         }
                         break;
 
-                    case "5":
+                    case "6":
                         RM.viewBlotterReports(input);
                         break;
 
-                    case "6":
+                    case "7":
                         System.out.println("Logging out...");
                         runAdminMenu = false;
                         break;
 
-                    case "7":
+                    case "8":
                         System.out.println("\nExiting... Goodbye!");
                         runAdminMenu = false;
                         isRunning = false;
                         break;
 
                     default:
-                        System.out.println("Invalid input. Please enter a number from 1 to 7.");
+                        System.out.println("Invalid input. Please enter a number from 1 to 8.");
                 }
             }
 
