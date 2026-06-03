@@ -1,11 +1,12 @@
 package src;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:mysql://localhost:8889/barangaydb";
+    private static final String URL = "jdbc:mysql://localhost:3306/barangaydb";
     private static final String USER = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "";
 
     public boolean authenticate(String username, String password) {
         String query = "SELECT * FROM credentials WHERE username = ? AND password = ?";
@@ -65,6 +66,61 @@ public class DatabaseManager {
         } catch (SQLException e) {
             return residentID;
         }
+    }
+
+    public boolean addResident(String lname, String fname, String mname, String sex, LocalDate dob, String pob, int householdID, String civilStatus, String citizenship, String occupation) {
+        String query = "INSERT INTO residents (residentID, lname, fname, mname, sex, dob, pob, address, civilstatus, citizenship, occupation, residencydate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            String lastResidentID = getLatestResidentID();
+            int residentNum = 0;
+            if (lastResidentID != null) {
+                residentNum = Integer.parseInt(lastResidentID.substring(1));
+            }
+            residentNum++;
+            
+            String residentID = String.format("R%04d", residentNum);
+            
+            preparedStatement.setString(1, residentID);
+            preparedStatement.setString(2, lname);
+            preparedStatement.setString(3, fname);
+            preparedStatement.setString(4, mname);
+            preparedStatement.setString(5, sex);
+            preparedStatement.setDate(6, Date.valueOf(dob));
+            preparedStatement.setString(7, pob);
+            preparedStatement.setInt(8, householdID);
+            preparedStatement.setString(9, civilStatus);
+            preparedStatement.setString(10, citizenship);
+            preparedStatement.setString(11, occupation);
+            preparedStatement.setDate(12, Date.valueOf(LocalDate.now()));
+
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String getLatestResidentID() {
+        String residentID = null;
+        String query = "SELECT residentID FROM residents ORDER BY id DESC LIMIT 1";
+
+        try (Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
+            Statement statement = conn.createStatement();
+            ResultSet resultSet = statement.executeQuery(query)) {
+
+            if (resultSet.next()) {
+                residentID = resultSet.getString("residentID");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return residentID;
     }
 
     public Resident getResident(String residentID) {
